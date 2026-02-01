@@ -190,7 +190,6 @@ class VoteSerializer(serializers.Serializer):
     Serializer for casting votes.
     
     Only needs option_id as input. Poll ID comes from URL.
-    voter_identifier is automatically determined (IP or user ID).
     """
     option_id = serializers.IntegerField()
     
@@ -198,9 +197,7 @@ class VoteSerializer(serializers.Serializer):
         """
         Ensure the option exists.
         """
-        try:
-            Option.objects.get(id=value)
-        except Option.DoesNotExist:
+        if not Option.objects.filter(id=value).exists():
             raise serializers.ValidationError("Invalid option ID.")
         return value
     
