@@ -103,7 +103,7 @@ class PollListSerializer(serializers.ModelSerializer):
     Lightweight serializer for poll list view.
     Shows basic info without all options details.
     """
-    createdby = serializers.StringRelatedField(read_only=True)
+    created_by = serializers.StringRelatedField(read_only=True)
     total_votes = serializers.SerializerMethodField()
     
     class Meta:
