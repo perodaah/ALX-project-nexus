@@ -184,3 +184,51 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'date_joined']
         read_only_fields = ['id', 'date_joined']
     
+    
+class VoteSerializer(serializers.ModelSerializer):
+    """
+    Serializer for casting votes.
+    
+    Only needs option_id as input. Poll ID comes from URL.
+    voter_identifier is automatically determined (IP or user ID).
+    """
+    option_id = serializers.IntegerField()
+    
+    def validate_option_id(self, value):
+        """
+        Ensure the option belongs to the poll being voted on.
+        """
+        try:
+            Option.objects.get(id=value)
+        except Option.DoesNotExist:
+            raise serializers.ValidationError("Invlaid option ID.")
+        return value
+    
+    
+    def validate(self, attrs):
+        """
+        Ensure the option belongs to the poll being voted on.
+        """
+        option_id = attrs['option_id']
+        poll_id = self.context.get('poll_id')
+        
+        try:
+            option = Option.objects.get(id=option_id)
+            if option.poll_id != poll_id:
+                raise serializers.ValidationError(
+                    "This option does not belong to this poll."
+                )
+        except Option.DoesNotExist:
+            raise serializers.ValidationError("Invalid option.")
+        
+        return attrs
+
+
+class PollResultSerializer(serializers.Serializer):
+    """
+    Serializer for poll results display.
+    Shows vote counts and percentages for each option.
+    """
+    option = serializers.CharField()
+    votes = serializers.IntegerField()
+    percentage = serializers.FloatField()
