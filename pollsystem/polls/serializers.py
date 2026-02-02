@@ -184,7 +184,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'date_joined']
         read_only_fields = ['id', 'date_joined']
     
-    
 class VoteSerializer(serializers.Serializer):
     """
     Serializer for casting votes.
@@ -195,32 +194,13 @@ class VoteSerializer(serializers.Serializer):
     
     def validate_option_id(self, value):
         """
-        Ensure the option exists.
+        Ensure the option exists (basic validation only).
+        Poll ownership check happens in the view.
         """
         if not Option.objects.filter(id=value).exists():
             raise serializers.ValidationError("Invalid option ID.")
         return value
     
-    
-    def validate(self, attrs):
-        """
-        Ensure the option belongs to the poll being voted on.
-        """
-        option_id = attrs['option_id']
-        poll_id = self.context.get('poll_id')
-        
-        try:
-            option = Option.objects.get(id=option_id)
-            if option.poll_id != poll_id:
-                raise serializers.ValidationError(
-                    "This option does not belong to this poll."
-                )
-        except Option.DoesNotExist:
-            raise serializers.ValidationError("Invalid option.")
-        
-        return attrs
-
-
 class PollResultSerializer(serializers.Serializer):
     """
     Serializer for poll results display.
