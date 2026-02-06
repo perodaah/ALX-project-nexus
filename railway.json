@@ -5,6 +5,6 @@
   },
   "deploy": {
     "startCommand": "gunicorn pollsystem.wsgi --log-file -",
-    "restartPolicyType": "always"
+    "restartPolicyType": "ALWAYS"
   }
 }
