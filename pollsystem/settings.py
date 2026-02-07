@@ -110,7 +110,7 @@ else:
     # Local development (use Railway public DB)
     DATABASES = {
         'default': dj_database_url.parse(
-            config('DATABASE_URL', default='postgresql://postgres:password@localhost:5432/poll_system_db'),
+            config('DATABASE_URL'),
             conn_max_age=600
         )
     }
